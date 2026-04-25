@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DogPoint | אילוף כלבים מקצועי — דור קליין</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest:  { DEFAULT:'#183D2A', dark:'#0E2418', mid:'#2A5E3F', light:'#3D7A54' },
+            gold:    { DEFAULT:'#C99A45', light:'#E4BC6F', pale:'#FDF8EE' },
+          },
+          fontFamily: { heebo: ['Heebo','sans-serif'] },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    *, body { font-family:'Heebo', sans-serif; }
+    html { scroll-behavior: smooth; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width:6px; }
+    ::-webkit-scrollbar-track { background:#f1f1f1; }
+    ::-webkit-scrollbar-thumb { background:#183D2A; border-radius:3px; }
+
+    /* ── Utilities ── */
+    .divider-gold {
+      display:block; width:52px; height:3px;
+      background:linear-gradient(90deg,#C99A45,#E4BC6F);
+      border-radius:2px; margin-bottom:18px;
+    }
+    .divider-gold.center { margin-left:auto; margin-right:auto; }
+
+    .btn-gold {
+      display:inline-flex; align-items:center; gap:10px;
+      background:linear-gradient(135deg,#C99A45,#E4BC6F);
+      color:#fff; font-weight:800; letter-spacing:.3px;
+      padding:15px 36px; border-radius:6px; border:none;
+      text-decoration:none; cursor:pointer;
+      box-shadow:0 4px 20px rgba(201,154,69,.35);
+      transition:transform .2s, box-shadow .2s;
+    }
+    .btn-gold:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(201,154,69,.5); }
+
+    .btn-outline-white {
+      display:inline-flex; align-items:center; gap:8px;
+      border:2px solid rgba(255,255,255,.55); color:rgba(255,255,255,.9);
+      padding:13px 30px; border-radius:6px; text-decoration:none;
+      font-weight:600; transition:border-color .2s, color .2s;
+    }
+    .btn-outline-white:hover { border-color:#fff; color:#fff; }
+
+    /* ── Hero ── */
+    .hero-img-wrap { position:absolute; inset:0; overflow:hidden; }
+    .hero-img-wrap img { width:100%; height:100%; object-fit:cover; object-position:center top; }
+    .hero-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(150deg,rgba(14,36,24,.88) 40%,rgba(14,36,24,.55) 100%);
+    }
+
+    /* ── Syllabus cards ── */
+    .syllabus-card {
+      transition:transform .25s, box-shadow .25s;
+      border-bottom:3px solid transparent;
+    }
+    .syllabus-card:hover {
+      transform:translateY(-5px);
+      box-shadow:0 16px 40px rgba(0,0,0,.1);
+      border-bottom-color:#C99A45;
+    }
+
+    /* ── Nav link underline ── */
+    .nav-lnk { position:relative; font-weight:500; color:rgba(255,255,255,.8); text-decoration:none; transition:color .2s; }
+    .nav-lnk::after { content:''; position:absolute; bottom:-4px; right:0; width:0; height:2px; background:#C99A45; transition:width .3s; }
+    .nav-lnk:hover { color:#E4BC6F; }
+    .nav-lnk:hover::after { width:100%; }
+
+    /* ── WhatsApp pulse ── */
+    @keyframes wa-pulse {
+      0%,100% { box-shadow:0 0 0 0 rgba(37,211,102,.45); }
+      60%      { box-shadow:0 0 0 12px rgba(37,211,102,0); }
+    }
+    .wa-ring { animation:wa-pulse 2.2s infinite; }
+
+    /* ── Chat messages scroll ── */
+    #chatMessages { scroll-behavior:smooth; }
+    #chatMessages::-webkit-scrollbar { width:3px; }
+    #chatMessages::-webkit-scrollbar-thumb { background:#183D2A; border-radius:2px; }
+
+    /* ── Typing dots ── */
+    @keyframes bounce-dot {
+      0%,80%,100% { transform:translateY(0); }
+      40%          { transform:translateY(-5px); }
+    }
+    .dot1 { animation:bounce-dot 1.2s infinite .0s; }
+    .dot2 { animation:bounce-dot 1.2s infinite .2s; }
+    .dot3 { animation:bounce-dot 1.2s infinite .4s; }
+
+    /* ── Stat counters ── */
+    .stat-num { font-feature-settings:"tnum"; }
+
+    /* ── Mobile nav ── */
+    @media(max-width:768px) {
+      .mobile-hidden { display:none; }
+    }
+
+    /* ── Accessibility Widget ── */
+    #accessBtn {
+      position:fixed; right:0; top:50%;
+      transform:translateY(-50%);
+      z-index:9997;
+      background:#183D2A; color:#fff; border:none;
+      border-radius:8px 0 0 8px;
+      padding:13px 8px;
+      cursor:pointer;
+      display:flex; flex-direction:column; align-items:center; gap:7px;
+      font-size:10px; font-weight:700; font-family:'Heebo',sans-serif;
+      box-shadow:-3px 0 16px rgba(0,0,0,.22);
+      transition:background .2s;
+    }
+    #accessBtn:hover { background:#2A5E3F; }
+    #accessPanel {
+      position:fixed; right:-266px; top:50%;
+      transform:translateY(-50%);
+      z-index:9996;
+      background:#fff; border-radius:12px 0 0 12px;
+      box-shadow:-4px 0 32px rgba(0,0,0,.14);
+      padding:22px 18px; width:252px;
+      transition:right .3s cubic-bezier(.4,0,.2,1);
+      border-top:4px solid #C99A45;
+      direction:rtl;
+    }
+    #accessPanel.open { right:0; }
+    .acc-header {
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:16px;
+    }
+    .acc-header h3 { font-size:15px; font-weight:800; color:#183D2A; margin:0; }
+    .acc-close {
+      background:none; border:none; cursor:pointer;
+      color:#bbb; font-size:19px; line-height:1;
+      padding:2px 6px; border-radius:4px; transition:color .2s;
+    }
+    .acc-close:hover { color:#183D2A; }
+    .acc-option {
+      width:100%; text-align:right; direction:rtl;
+      background:#F5F5F0; border:2px solid transparent;
+      border-radius:8px; padding:10px 13px; margin-bottom:8px;
+      cursor:pointer; font-size:13px; font-weight:600; color:#1A1A1A;
+      font-family:'Heebo',sans-serif;
+      display:flex; align-items:center; gap:10px;
+      transition:background .18s, border-color .18s;
+    }
+    .acc-option:hover { background:#EDF5F0; border-color:#2A5E3F; }
+    .acc-option.active { background:#183D2A; color:#fff; border-color:#183D2A; }
+    .acc-option .acc-icon { font-size:16px; flex-shrink:0; }
+    .acc-reset {
+      width:100%; background:none; border:1px solid #ddd;
+      border-radius:7px; color:#999; font-size:11px;
+      font-family:'Heebo',sans-serif; cursor:pointer;
+      padding:8px; text-align:center; margin-top:4px;
+      transition:border-color .2s, color .2s;
+    }
+    .acc-reset:hover { color:#183D2A; border-color:#183D2A; }
+    html.acc-big-text     { font-size:120%; }
+    html.acc-grayscale    { filter:grayscale(100%); }
+    html.acc-high-contrast{ filter:invert(88%) hue-rotate(180deg); }
+    html.acc-underline a  { text-decoration:underline !important; }
+  </style>
+</head>
+<body class="bg-[#F9F7F2] text-[#1A1A1A] overflow-x-hidden">
+
+<!-- ═══════════════════════════════════════
+     NAVBAR
+════════════════════════════════════════ -->
+<nav class="fixed top-0 w-full z-50 bg-forest/95 backdrop-blur-sm border-b border-white/10">
+  <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+
+    <!-- Logo -->
+    <a href="#" class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-full bg-gold flex items-center justify-center shadow-md">
+        <span class="text-white font-black text-xs tracking-tight">DP</span>
+      </div>
+      <span class="text-white font-black text-lg tracking-wide">DogPoint</span>
+    </a>
+
+    <!-- Links (desktop) -->
+    <div class="mobile-hidden flex items-center gap-8">
+      <a href="#course" class="nav-lnk text-sm">הקורס</a>
+      <a href="#about"  class="nav-lnk text-sm">על דור</a>
+      <a href="#contact" class="nav-lnk text-sm">יצירת קשר</a>
+    </div>
+
+    <!-- CTA -->
+    <a href="https://wa.me/972557048141?text=היי דור, אני מתעניין בקורס DogPoint ורוצה לשמוע עוד"
+       target="_blank" class="btn-gold text-sm !py-2.5 !px-5 !gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.525 5.845L.057 23.428a.5.5 0 0 0 .617.597l5.763-1.511A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.51-5.17-1.4l-.37-.219-3.826 1.003 1.022-3.735-.24-.383A9.959 9.959 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+      </svg>
+      דברו איתנו
+    </a>
+  </div>
+</nav>
+
+
+<!-- ═══════════════════════════════════════
+     HERO
+════════════════════════════════════════ -->
+<section id="hero" class="relative min-h-screen flex flex-col justify-center overflow-hidden">
+
+  <!-- Background image -->
+  <div class="hero-img-wrap">
+    <img src="dor.jpg.jpeg" alt="דור קליין" />
+    <div class="hero-overlay"></div>
+  </div>
+
+  <!-- Glow blobs -->
+  <div class="absolute top-1/3 left-8 w-72 h-72 rounded-full bg-gold/10 blur-3xl pointer-events-none"></div>
+  <div class="absolute bottom-1/4 right-16 w-96 h-96 rounded-full bg-forest-mid/20 blur-3xl pointer-events-none"></div>
+
+  <!-- Content -->
+  <div class="relative z-10 max-w-6xl mx-auto w-full px-6 pt-24 pb-20">
+    <div class="max-w-2xl">
+
+      <!-- Badge -->
+      <div class="inline-flex items-center gap-2 border border-gold/40 bg-gold/15 rounded-full px-4 py-1.5 mb-8">
+        <span class="w-2 h-2 rounded-full bg-gold animate-pulse"></span>
+        <span class="text-gold-light text-sm font-medium">קורס אילוף מקצועי · מושב גילת</span>
+      </div>
+
+      <!-- Headline -->
+      <h1 class="text-5xl md:text-[4.2rem] font-black text-white leading-[1.1] mb-6">
+        יש לך אהבה<br />
+        לכלבים?<br />
+        <span class="text-gold">הגיע הזמן</span><br />
+        להפוך אותה<br />
+        למקצוע.
+      </h1>
+
+      <p class="text-lg text-white/70 leading-relaxed mb-10 max-w-lg">
+        קורס מקצועי, פרונטלי ומעשי עם אחד המאלפים המובילים בישראל.
+        לא תיאוריה — שטח אמיתי, כלבים אמיתיים, תוצאות אמיתיות.
+      </p>
+
+      <!-- CTAs -->
+      <div class="flex flex-wrap items-center gap-4">
+        <a href="https://wa.me/972557048141?text=היי דור, אני רוצה לשמוע עוד על קורס DogPoint"
+           target="_blank" class="btn-gold text-base">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.525 5.845L.057 23.428a.5.5 0 0 0 .617.597l5.763-1.511A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.51-5.17-1.4l-.37-.219-3.826 1.003 1.022-3.735-.24-.383A9.959 9.959 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+          </svg>
+          אני רוצה לשמוע עוד
+        </a>
+        <a href="#course" class="btn-outline-white text-base">
+          גלה את הקורס
+          <i data-lucide="arrow-down" class="w-4 h-4"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="relative z-10 bg-forest/80 backdrop-blur-sm border-t border-white/10">
+    <div class="max-w-6xl mx-auto px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+      <div>
+        <p class="stat-num text-3xl font-black text-gold">10,000+</p>
+        <p class="text-white/55 text-xs mt-0.5">כלבים טופלו</p>
+      </div>
+      <div>
+        <p class="stat-num text-3xl font-black text-gold">10</p>
+        <p class="text-white/55 text-xs mt-0.5">שנות ניסיון</p>
+      </div>
+      <div>
+        <p class="stat-num text-3xl font-black text-gold">200+</p>
+        <p class="text-white/55 text-xs mt-0.5">בוגרי קורס</p>
+      </div>
+      <div>
+        <p class="stat-num text-3xl font-black text-gold">100%</p>
+        <p class="text-white/55 text-xs mt-0.5">שיעורים פרונטליים</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     COURSE — הופכים אהבה למקצוע
+════════════════════════════════════════ -->
+<section id="course" class="py-24 bg-[#F9F7F2]">
+  <div class="max-w-6xl mx-auto px-6">
+
+    <!-- Header -->
+    <div class="text-center mb-16">
+      <span class="divider-gold center"></span>
+      <p class="text-gold text-xs font-semibold tracking-widest uppercase mb-2">מה לומדים</p>
+      <h2 class="text-4xl md:text-5xl font-black text-forest leading-tight mb-4">
+        הופכים אהבה<br />למקצוע
+      </h2>
+      <p class="text-gray-500 text-base leading-relaxed max-w-xl mx-auto">
+        תוכנית מקיפה שמכסה את כל מה שמאלף מקצועי צריך לדעת —
+        משיקום כלבים ועד ספורט ברמה גבוהה. כולל שיעורים פרונטליים ב<strong class="text-forest">מושב גילת</strong>.
+      </p>
+    </div>
+
+    <!-- Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+
+      <!-- 1 -->
+      <div class="syllabus-card bg-white rounded-2xl p-8 shadow-sm">
+        <div class="w-14 h-14 rounded-xl bg-[#EDF5F0] flex items-center justify-center mb-6">
+          <i data-lucide="heart-handshake" class="w-7 h-7 text-forest"></i>
+        </div>
+        <h3 class="text-lg font-bold text-forest mb-2">שיקום כלבים</h3>
+        <p class="text-gray-400 text-sm leading-relaxed">
+          טכניקות שיקום עמוקות לכלבים שעברו טראומה, פחד, או קשיים רגשיים — ועזרה לבעלים להבין מה הכלב עובר.
+        </p>
+      </div>
+
+      <!-- 2 -->
+      <div class="syllabus-card bg-white rounded-2xl p-8 shadow-sm">
+        <div class="w-14 h-14 rounded-xl bg-[#EDF5F0] flex items-center justify-center mb-6">
+          <i data-lucide="brain" class="w-7 h-7 text-forest"></i>
+        </div>
+        <h3 class="text-lg font-bold text-forest mb-2">בעיות התנהגות</h3>
+        <p class="text-gray-400 text-sm leading-relaxed">
+          אבחון וטיפול בתוקפנות, חרדות, נביחות יתר, קפיצות — הכלים לשינוי תבניות שגורמות לבעלים לאבד תקווה.
+        </p>
+      </div>
+
+      <!-- 3 -->
+      <div class="syllabus-card bg-white rounded-2xl p-8 shadow-sm">
+        <div class="w-14 h-14 rounded-xl bg-[#EDF5F0] flex items-center justify-center mb-6">
+          <i data-lucide="trophy" class="w-7 h-7 text-forest"></i>
+        </div>
+        <h3 class="text-lg font-bold text-forest mb-2">ספורט כלבני</h3>
+        <p class="text-gray-400 text-sm leading-relaxed">
+          אגיליטי, פגישות ריצה, ושחרור אנרגיה חיובית. כי כלב שעובד קשה — הוא כלב מאושר, רגוע ומצליח.
+        </p>
+      </div>
+
+      <!-- 4 -->
+      <div class="syllabus-card bg-white rounded-2xl p-8 shadow-sm">
+        <div class="w-14 h-14 rounded-xl bg-[#EDF5F0] flex items-center justify-center mb-6">
+          <i data-lucide="message-circle" class="w-7 h-7 text-forest"></i>
+        </div>
+        <h3 class="text-lg font-bold text-forest mb-2">תקשורת בין כלבים</h3>
+        <p class="text-gray-400 text-sm leading-relaxed">
+          הבנת שפת הגוף, ניהול מפגשים, ודינמיקות חברה — כי מאלף טוב יודע לקרוא את הכלב לפני שהוא מגיב.
+        </p>
+      </div>
+    </div>
+
+    <!-- Info strip -->
+    <div class="bg-forest rounded-2xl px-8 py-7 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex flex-col md:flex-row items-center gap-6 text-white">
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="map-pin" class="w-5 h-5 text-gold flex-shrink-0"></i>
+          <span class="font-semibold text-sm">מושב גילת, דרום ישראל</span>
+        </div>
+        <span class="hidden md:block w-px h-5 bg-white/20"></span>
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="users" class="w-5 h-5 text-gold flex-shrink-0"></i>
+          <span class="font-semibold text-sm">שיעורים פרונטליים בלבד</span>
+        </div>
+        <span class="hidden md:block w-px h-5 bg-white/20"></span>
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="graduation-cap" class="w-5 h-5 text-gold flex-shrink-0"></i>
+          <span class="font-semibold text-sm">תעודת מאלף מוסמכת</span>
+        </div>
+      </div>
+      <a href="https://wa.me/972557048141?text=היי דור, אני רוצה לשמוע על קורס DogPoint"
+         target="_blank" class="btn-gold text-sm !py-3 !px-7 whitespace-nowrap">
+        מתעניין? שלח הודעה ←
+      </a>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     ABOUT DOR
+════════════════════════════════════════ -->
+<section id="about" class="py-24 bg-white">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+      <!-- Image -->
+      <div class="relative order-2 lg:order-1">
+        <div class="relative rounded-3xl overflow-hidden shadow-2xl">
+          <img src="dor-k.jpg.jpeg" alt="דור קליין"
+               class="w-full h-[560px] object-cover object-top"
+               onerror="this.src='dor-kl.jpg.jpeg'" />
+          <div class="absolute inset-0 bg-gradient-to-t from-forest/60 via-transparent to-transparent"></div>
+
+          <!-- Floating stat card -->
+          <div class="absolute bottom-5 right-5 left-5">
+            <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-4 flex items-center gap-4 shadow-xl">
+              <div class="w-11 h-11 rounded-full bg-gold flex items-center justify-center flex-shrink-0">
+                <i data-lucide="paw-print" class="w-5 h-5 text-white"></i>
+              </div>
+              <div class="flex-1">
+                <p class="font-bold text-forest text-sm">מעל 10,000 כלבים</p>
+                <p class="text-gray-400 text-xs">בוגרי טיפול ואילוף בעשור האחרון</p>
+              </div>
+              <div class="text-left border-r border-gray-100 pr-4">
+                <p class="font-black text-2xl text-forest leading-none">10+</p>
+                <p class="text-gray-400 text-xs">שנות ניסיון</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accent badge -->
+        <div class="absolute -top-3 -right-3 w-14 h-14 bg-gold rounded-2xl shadow-xl flex items-center justify-center">
+          <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
+        </div>
+      </div>
+
+      <!-- Copy -->
+      <div class="order-1 lg:order-2">
+        <span class="divider-gold"></span>
+        <p class="text-gold text-xs font-semibold tracking-widest uppercase mb-2">הכירו את דור</p>
+        <h2 class="text-4xl md:text-5xl font-black text-forest leading-tight mb-6">
+          מאלף שהגיע<br />
+          <span class="text-gold">מתוך שליחות</span>,<br />
+          לא מתוך חישוב.
+        </h2>
+
+        <div class="space-y-4 text-gray-500 text-[15px] leading-relaxed">
+          <p>
+            דור קליין (32), תושב מושב גילת. מאז שהוא זוכר את עצמו, כלבים היו חלק מהחיים שלו —
+            לא "חיות מחמד", אלא שפה. הוא לא בחר במקצוע הזה; המקצוע בחר אותו.
+          </p>
+          <p>
+            <strong class="text-forest">10 שנות עבודה בשטח. מעל 10,000 כלבים</strong> שטיפל בהם, הבין אותם,
+            ושינה את חייהם — ואת חיי הבעלים שלהם. הוא הקים את אחד המרכזים המבוקשים בדרום הארץ
+            ומתמחה בספורט כלבני ברמה הגבוהה ביותר.
+          </p>
+          <p>
+            אבל מה שדור אוהב יותר מהכל? לראות אנשים יוצאים מהקורס שלו עם ניצוץ בעיניים.
+            כאלה שמבינים שמקצוע לא רק בוחרים — <strong class="text-forest">מקצוע מוצאים</strong>.
+          </p>
+        </div>
+
+        <!-- Highlights grid -->
+        <div class="grid grid-cols-2 gap-4 mt-8">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gold/15 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="zap" class="w-5 h-5 text-gold"></i>
+            </div>
+            <div>
+              <p class="font-bold text-forest text-sm">ספורט כלבני</p>
+              <p class="text-gray-400 text-xs">מומחה ברמה לאומית</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gold/15 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="heart" class="w-5 h-5 text-gold"></i>
+            </div>
+            <div>
+              <p class="font-bold text-forest text-sm">בגובה העיניים</p>
+              <p class="text-gray-400 text-xs">גישה אנושית ומכבדת</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gold/15 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+            </div>
+            <div>
+              <p class="font-bold text-forest text-sm">מושב גילת</p>
+              <p class="text-gray-400 text-xs">שטח פתוח ואמיתי</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gold/15 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="graduation-cap" class="w-5 h-5 text-gold"></i>
+            </div>
+            <div>
+              <p class="font-bold text-forest text-sm">200+ בוגרים</p>
+              <p class="text-gray-400 text-xs">עם תעודה מוסמכת</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     CTA BAND
+════════════════════════════════════════ -->
+<section id="contact" class="py-24 bg-forest relative overflow-hidden">
+  <!-- Background glow -->
+  <div class="absolute top-0 right-0 w-96 h-96 rounded-full bg-gold/8 blur-3xl pointer-events-none"></div>
+  <div class="absolute bottom-0 left-0 w-72 h-72 rounded-full bg-gold/6 blur-3xl pointer-events-none"></div>
+
+  <div class="relative z-10 max-w-3xl mx-auto px-6 text-center">
+    <span class="divider-gold center"></span>
+    <p class="text-gold text-xs font-semibold tracking-widest uppercase mb-3">הצעד הבא</p>
+    <h2 class="text-4xl md:text-5xl font-black text-white leading-tight mb-5">
+      מוכן לצעד הבא?<br />
+      <span class="text-gold">דור מחכה לשמוע ממך.</span>
+    </h2>
+    <p class="text-white/60 text-base leading-relaxed mb-10 max-w-xl mx-auto">
+      שאלות? ספקות? רוצה לדעת אם זה מתאים לך?
+      שלח הודעה — דור עונה אישית, בלי בוטים ובלי שיחות מכירה.
+    </p>
+    <a href="https://wa.me/972557048141?text=היי דור, אני מתעניין בקורס DogPoint ורוצה לשמוע עוד"
+       target="_blank" class="btn-gold text-lg !px-10 !py-5">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.525 5.845L.057 23.428a.5.5 0 0 0 .617.597l5.763-1.511A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.51-5.17-1.4l-.37-.219-3.826 1.003 1.022-3.735-.24-.383A9.959 9.959 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+      </svg>
+      שלח הודעה בוואטסאפ
+    </a>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+════════════════════════════════════════ -->
+<footer class="bg-forest-dark py-12 border-t border-white/10">
+  <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8">
+
+    <!-- Brand -->
+    <div class="flex flex-col items-center md:items-start gap-2">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-gold flex items-center justify-center">
+          <span class="text-white font-black text-xs">DP</span>
+        </div>
+        <span class="text-white font-black text-xl">DogPoint</span>
+      </div>
+      <p class="text-white/35 text-xs">אילוף כלבים בגובה העיניים</p>
+    </div>
+
+    <!-- Social links -->
+    <div class="flex items-center gap-4">
+
+      <!-- WhatsApp -->
+      <a href="https://wa.me/972557048141" target="_blank"
+         title="WhatsApp"
+         class="w-12 h-12 rounded-full bg-[#25D366] flex items-center justify-center shadow-lg wa-ring hover:scale-110 transition-transform">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="white">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.525 5.845L.057 23.428a.5.5 0 0 0 .617.597l5.763-1.511A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.51-5.17-1.4l-.37-.219-3.826 1.003 1.022-3.735-.24-.383A9.959 9.959 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+        </svg>
+      </a>
+
+      <!-- Instagram -->
+      <a href="https://www.instagram.com/dogpoint_center_training?igsh=MWUxaG9yMHZldGZlMA==" target="_blank"
+         title="Instagram"
+         class="w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+         style="background:linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)">
+        <i data-lucide="instagram" class="w-5 h-5 text-white"></i>
+      </a>
+    </div>
+
+    <p class="text-white/25 text-xs text-center">© 2025 DogPoint · כל הזכויות שמורות</p>
+  </div>
+</footer>
+
+
+<!-- ═══════════════════════════════════════
+     ACCESSIBILITY WIDGET
+════════════════════════════════════════ -->
+<button id="accessBtn" onclick="toggleAccessPanel()" aria-label="פתח תפריט נגישות" title="נגישות">
+  <span style="font-size:20px;line-height:1;">♿</span>
+  <span>נגישות</span>
+</button>
+
+<div id="accessPanel" role="dialog" aria-label="תפריט נגישות">
+  <div class="acc-header">
+    <h3>אפשרויות נגישות</h3>
+    <button class="acc-close" onclick="toggleAccessPanel()" aria-label="סגור">✕</button>
+  </div>
+
+  <button class="acc-option" id="opt-big-text" onclick="toggleAcc('big-text','opt-big-text')">
+    <span class="acc-icon" style="font-weight:900;">A+</span>
+    הגדלת טקסט
+  </button>
+  <button class="acc-option" id="opt-grayscale" onclick="toggleAcc('grayscale','opt-grayscale')">
+    <span class="acc-icon">◑</span>
+    גווני אפור
+  </button>
+  <button class="acc-option" id="opt-high-contrast" onclick="toggleAcc('high-contrast','opt-high-contrast')">
+    <span class="acc-icon">◐</span>
+    ניגודיות גבוהה
+  </button>
+  <button class="acc-option" id="opt-underline" onclick="toggleAcc('underline','opt-underline')">
+    <span class="acc-icon" style="text-decoration:underline;">A</span>
+    הדגשת קישורים
+  </button>
+
+  <button class="acc-reset" onclick="resetAcc()">אפס הכל</button>
+</div>
+
+
+<!-- Credit bar -->
+<div style="background:#070F0A; padding:10px 0; text-align:center;">
+  <p style="color:#444; font-size:11px; margin:0; font-family:'Heebo',sans-serif;">כל הזכויות שמורות ל-Prime south</p>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     FLOATING WhatsApp BUTTON
+════════════════════════════════════════ -->
+<a href="https://wa.me/972557048141?text=היי דור, אני מתעניין בקורס DogPoint"
+   target="_blank"
+   class="fixed bottom-6 left-6 z-50 group flex items-center gap-3">
+  <!-- Tooltip -->
+  <div class="opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-2 group-hover:translate-x-0
+              bg-white text-forest text-xs font-bold px-3 py-2 rounded-lg shadow-lg whitespace-nowrap">
+    דברו עם דור ישירות
+  </div>
+  <!-- Button -->
+  <div class="w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center shadow-xl wa-ring hover:scale-110 transition-transform">
+    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="white">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.525 5.845L.057 23.428a.5.5 0 0 0 .617.597l5.763-1.511A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.51-5.17-1.4l-.37-.219-3.826 1.003 1.022-3.735-.24-.383A9.959 9.959 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+    </svg>
+  </div>
+</a>
+
+
+<!-- ═══════════════════════════════════════
+     CHAT BOT WIDGET (floating, bottom-right)
+════════════════════════════════════════ -->
+<div id="chatWidget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+
+  <!-- Chat window -->
+  <div id="chatBox" class="hidden w-[310px] bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100/80"
+       style="max-height:480px; display:flex; flex-direction:column;">
+
+    <!-- Header -->
+    <div class="bg-forest px-5 py-4 flex items-center justify-between flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-gold flex items-center justify-center font-black text-white text-xs">DP</div>
+        <div>
+          <p class="text-white font-bold text-sm leading-none mb-0.5">עוזר DogPoint</p>
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+            <span class="text-white/50 text-[11px]">מחובר ומוכן לענות</span>
+          </div>
+        </div>
+      </div>
+      <button onclick="toggleChat()" class="text-white/50 hover:text-white transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- Messages area -->
+    <div id="chatMessages" class="flex-1 p-4 space-y-3 overflow-y-auto bg-[#F5F5F0]"
+         style="min-height:160px; max-height:260px;">
+      <div class="flex gap-2 items-start">
+        <div class="w-7 h-7 rounded-full bg-forest flex items-center justify-center flex-shrink-0 mt-0.5">
+          <span class="text-white text-[10px] font-black">DP</span>
+        </div>
+        <div class="bg-white rounded-2xl rounded-tr-sm px-3.5 py-3 shadow-sm max-w-[220px]">
+          <p class="text-gray-700 text-[13px] leading-relaxed">
+            היי! 👋 אני כאן לענות על שאלות על הקורס של דור. מה תרצה לדעת?
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick chips -->
+    <div id="quickChips" class="px-3 py-2.5 flex gap-2 flex-wrap border-t border-gray-100 bg-white flex-shrink-0">
+      <button onclick="sendChip('מה לומדים בקורס?')"
+              class="text-[11px] bg-[#EDF5F0] text-forest font-bold rounded-full px-3 py-1.5 hover:bg-green-100 transition-colors">
+        מה לומדים?
+      </button>
+      <button onclick="sendChip('כמה עולה הקורס?')"
+              class="text-[11px] bg-[#EDF5F0] text-forest font-bold rounded-full px-3 py-1.5 hover:bg-green-100 transition-colors">
+        מחיר
+      </button>
+      <button onclick="sendChip('האם צריך ניסיון?')"
+              class="text-[11px] bg-[#EDF5F0] text-forest font-bold rounded-full px-3 py-1.5 hover:bg-green-100 transition-colors">
+        ניסיון קודם?
+      </button>
+    </div>
+
+    <!-- Input row -->
+    <div class="p-3 border-t border-gray-100 bg-white flex gap-2 flex-shrink-0">
+      <input id="chatInput" type="text"
+             placeholder="כתוב שאלה..."
+             dir="rtl"
+             class="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] outline-none focus:border-forest transition-colors"
+             onkeydown="if(event.key==='Enter') sendChat()" />
+      <button onclick="sendChat()"
+              class="w-9 h-9 rounded-xl bg-forest flex items-center justify-center flex-shrink-0 hover:bg-forest-light transition-colors">
+        <i data-lucide="send" class="w-4 h-4 text-white" style="transform:scaleX(-1)"></i>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Toggle button -->
+  <button id="chatToggle" onclick="toggleChat()"
+          class="w-14 h-14 rounded-full bg-forest shadow-xl flex items-center justify-center text-white
+                 hover:bg-forest-light transition-all hover:scale-105 active:scale-95">
+    <span id="chatIcon" class="text-xl">🐾</span>
+  </button>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SCRIPTS
+════════════════════════════════════════ -->
+<script>
+  /* ── Lucide init ── */
+  window.addEventListener('load', () => lucide.createIcons());
+
+  /* ── Conversation history (kept client-side, sent to proxy each turn) ── */
+  const chatHistory = [];
+
+  /* ── Convert plain URLs in bot replies to styled links ── */
+  function formatBotText(text) {
+    return text
+      .replace(
+        /(https:\/\/wa\.me\/[^\s\n<"]+)/g,
+        '<a href="$1" target="_blank" class="text-gold font-bold underline">שלח וואטסאפ ←</a>'
+      )
+      .replace(/\n/g, '<br/>');
+  }
+
+  /* ── Call the Express proxy — key never touches the browser ── */
+  async function getBotReply(userText) {
+    chatHistory.push({ role: 'user', content: userText });
+
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: chatHistory.slice(-8) })
+    });
+
+    if (!res.ok) throw new Error(`server ${res.status}`);
+
+    const { reply } = await res.json();
+    chatHistory.push({ role: 'assistant', content: reply });
+    return reply;
+  }
+
+  function addMsg(html, isUser) {
+    const msgs = document.getElementById('chatMessages');
+    const wrap = document.createElement('div');
+
+    if (isUser) {
+      wrap.className = 'flex justify-start';
+      wrap.innerHTML = `<div class="bg-forest text-white rounded-2xl rounded-tl-sm px-3.5 py-2.5 max-w-[220px] text-[13px] leading-relaxed">${html}</div>`;
+    } else {
+      wrap.className = 'flex gap-2 items-start';
+      wrap.innerHTML = `
+        <div class="w-7 h-7 rounded-full bg-forest flex items-center justify-center flex-shrink-0 mt-0.5">
+          <span class="text-white text-[10px] font-black">DP</span>
+        </div>
+        <div class="bg-white rounded-2xl rounded-tr-sm px-3.5 py-3 shadow-sm max-w-[220px] text-[13px] leading-relaxed text-gray-700">
+          ${formatBotText(html)}
+        </div>`;
+    }
+
+    msgs.appendChild(wrap);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  async function sendChat() {
+    const inp = document.getElementById('chatInput');
+    const text = inp.value.trim();
+    if (!text) return;
+    inp.value = '';
+
+    addMsg(text, true);
+
+    const chips = document.getElementById('quickChips');
+    if (chips) chips.style.display = 'none';
+
+    /* Typing indicator */
+    const msgs = document.getElementById('chatMessages');
+    const typing = document.createElement('div');
+    typing.id = 'typingDots';
+    typing.className = 'flex gap-2 items-start';
+    typing.innerHTML = `
+      <div class="w-7 h-7 rounded-full bg-forest flex items-center justify-center flex-shrink-0 mt-0.5">
+        <span class="text-white text-[10px] font-black">DP</span>
+      </div>
+      <div class="bg-white rounded-2xl rounded-tr-sm px-4 py-3 shadow-sm">
+        <div class="flex gap-1 items-center h-4">
+          <span class="w-2 h-2 rounded-full bg-gray-300 dot1"></span>
+          <span class="w-2 h-2 rounded-full bg-gray-300 dot2"></span>
+          <span class="w-2 h-2 rounded-full bg-gray-300 dot3"></span>
+        </div>
+      </div>`;
+    msgs.appendChild(typing);
+    msgs.scrollTop = msgs.scrollHeight;
+
+    inp.disabled = true;
+
+    try {
+      const reply = await getBotReply(text);
+      typing.remove();
+      addMsg(reply, false);
+    } catch (err) {
+      typing.remove();
+      addMsg('מצטער, אירעה שגיאה טכנית 😔\nנסה שוב או <a href="https://wa.me/972557048141" target="_blank" class="text-gold font-bold">פנה לדור ישירות</a>.', false);
+    } finally {
+      inp.disabled = false;
+      inp.focus();
+    }
+  }
+
+  function sendChip(text) {
+    document.getElementById('chatInput').value = text;
+    sendChat();
+  }
+
+  function toggleChat() {
+    const box  = document.getElementById('chatBox');
+    const icon = document.getElementById('chatIcon');
+    const isOpen = box.style.display !== 'none' && !box.classList.contains('hidden');
+
+    if (isOpen) {
+      box.style.display = 'none';
+      icon.textContent = '🐾';
+    } else {
+      box.style.display = 'flex';
+      icon.textContent = '✕';
+      lucide.createIcons();
+      setTimeout(() => {
+        const msgs = document.getElementById('chatMessages');
+        msgs.scrollTop = msgs.scrollHeight;
+      }, 50);
+    }
+  }
+
+  document.getElementById('chatBox').style.display = 'none';
+
+  /* ── Accessibility widget ── */
+  function toggleAccessPanel() {
+    document.getElementById('accessPanel').classList.toggle('open');
+  }
+
+  function toggleAcc(feature, btnId) {
+    const html = document.documentElement;
+    const btn  = document.getElementById(btnId);
+    const cls  = 'acc-' + feature;
+    if (html.classList.contains(cls)) {
+      html.classList.remove(cls);
+      btn.classList.remove('active');
+    } else {
+      html.classList.add(cls);
+      btn.classList.add('active');
+    }
+  }
+
+  function resetAcc() {
+    ['acc-big-text','acc-grayscale','acc-high-contrast','acc-underline'].forEach(c => {
+      document.documentElement.classList.remove(c);
+    });
+    document.querySelectorAll('.acc-option').forEach(b => b.classList.remove('active'));
+  }
+
+  document.addEventListener('click', function(e) {
+    const panel = document.getElementById('accessPanel');
+    const btn   = document.getElementById('accessBtn');
+    if (panel.classList.contains('open') && !panel.contains(e.target) && !btn.contains(e.target)) {
+      panel.classList.remove('open');
+    }
+  });
+</script>
+
+</body>
+</html>
